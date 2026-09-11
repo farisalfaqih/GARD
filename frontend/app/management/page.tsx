@@ -145,6 +145,7 @@ export default function ManagementDashboard() {
             <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Month</label>
             <div className="relative">
               <select className="w-full appearance-none border border-gray-300 text-gray-700 text-[13px] rounded-md px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer">
+                <option>All month</option>
                 <option>January</option>
                 <option>February</option>
                 <option>March</option>
