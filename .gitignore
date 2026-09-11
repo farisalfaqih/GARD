@@ -1,0 +1,10 @@
+node_modules
+.next
+vendor
+.env
+.env.*
+*.log
+dist
+build
+/frontend/node_modules
+/backend/vendor
