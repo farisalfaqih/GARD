@@ -16,17 +16,45 @@ class DashboardController extends Controller
                 'needRevision' => 4,
                 'completed' => 16,
             ],
-            'assessmentProgress' => [
-                'current' => 'Permintaan Penggunaan HCSO',
-                'version' => 'v2',
-                'status' => 'NEED REVISION',
-                'steps' => [
-                    ['name' => 'Draft', 'completed' => true],
-                    ['name' => 'Submitted', 'completed' => true],
-                    ['name' => 'Review', 'completed' => true],
-                    ['name' => 'Revision', 'completed' => true, 'current' => true],
-                    ['name' => 'DG Council', 'completed' => true],
-                    ['name' => 'Completed', 'completed' => false],
+            'assessmentProgresses' => [
+                [
+                    'current' => 'Permintaan Penggunaan HCSO',
+                    'version' => 'v2',
+                    'status' => 'NEED REVISION',
+                    'steps' => [
+                        ['name' => 'Draft', 'completed' => true],
+                        ['name' => 'Submitted', 'completed' => true],
+                        ['name' => 'Review', 'completed' => true],
+                        ['name' => 'Revision', 'completed' => true, 'current' => true],
+                        ['name' => 'DG Council', 'completed' => true],
+                        ['name' => 'Completed', 'completed' => false],
+                    ],
+                ],
+                [
+                    'current' => 'Test Use Case Baru',
+                    'version' => 'v1',
+                    'status' => 'COMPLETED',
+                    'steps' => [
+                        ['name' => 'Draft', 'completed' => true],
+                        ['name' => 'Submitted', 'completed' => true],
+                        ['name' => 'Review', 'completed' => true],
+                        ['name' => 'Revision', 'completed' => true],
+                        ['name' => 'DG Council', 'completed' => true],
+                        ['name' => 'Completed', 'completed' => true, 'current' => true],
+                    ],
+                ],
+                [
+                    'current' => 'Perubahan Data Target',
+                    'version' => 'v2',
+                    'status' => 'IN REVIEW',
+                    'steps' => [
+                        ['name' => 'Draft', 'completed' => true],
+                        ['name' => 'Submitted', 'completed' => true],
+                        ['name' => 'Review', 'completed' => true, 'current' => true],
+                        ['name' => 'Revision', 'completed' => false],
+                        ['name' => 'DG Council', 'completed' => false],
+                        ['name' => 'Completed', 'completed' => false],
+                    ],
                 ],
             ],
             'actionRequired' => [

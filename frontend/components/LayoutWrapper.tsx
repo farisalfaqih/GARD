@@ -25,6 +25,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
 
   const isRequester = pathname === '/' || pathname === '';
   const isReviewer = pathname === '/reviewer';
+  const isManagement = pathname === '/management';
 
   return (
     <div className="min-h-screen flex bg-[#f8f9fc]">
@@ -57,10 +58,10 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
             <div className="absolute bottom-0 left-12 ml-2 w-64 bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 py-2 z-[60] overflow-hidden">
               <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50">
                 <p className="text-sm font-bold text-gray-900">
-                  {isReviewer ? 'Reviewer Dummy' : 'Requester Dummy'}
+                  {isReviewer ? 'Reviewer Dummy' : isManagement ? 'Management Dummy' : 'Requester Dummy'}
                 </p>
                 <p className="text-[11px] text-gray-500 font-medium">
-                  {isReviewer ? 'reviewer@gard.id' : 'requester@gard.id'}
+                  {isReviewer ? 'reviewer@gard.id' : isManagement ? 'management@gard.id' : 'requester@gard.id'}
                 </p>
               </div>
 
@@ -96,14 +97,17 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
                 </div>
 
                 {/* Management */}
-                <div className="px-4 py-2.5 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition group">
+                <div
+                  onClick={() => handleNavigation('/management')}
+                  className={`px-4 py-2.5 flex items-center justify-between cursor-pointer transition ${isManagement ? 'bg-indigo-50/50 hover:bg-indigo-50' : 'hover:bg-gray-50 group'}`}
+                >
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded bg-gray-100 text-gray-500 group-hover:bg-emerald-100 group-hover:text-emerald-700 flex items-center justify-center transition">
+                    <div className={`w-7 h-7 rounded flex items-center justify-center shadow-sm transition ${isManagement ? 'bg-[#2e347b] text-white' : 'bg-gray-100 text-gray-500 group-hover:bg-emerald-100 group-hover:text-emerald-700'}`}>
                       <Building2 className="w-3.5 h-3.5" />
                     </div>
-                    <span className="text-[13px] font-medium text-gray-700 group-hover:text-gray-900 transition">Management</span>
+                    <span className={`text-[13px] transition ${isManagement ? 'font-semibold text-[#2e347b]' : 'font-medium text-gray-700 group-hover:text-gray-900'}`}>Management</span>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-500" />
+                  {isManagement ? <Check className="w-4 h-4 text-[#2e347b]" /> : <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-500" />}
                 </div>
               </div>
 

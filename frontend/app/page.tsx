@@ -214,7 +214,7 @@ export default function DashboardPage() {
               >
                 <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
               </button>
-              <button className="px-4 py-2 h-10 rounded-md border-2 border-gard-header bg-white text-gard-header text-[13px] font-semibold hover:bg-indigo-50 transition shadow-sm">
+              <button className="px-4 py-2 h-10 rounded-md bg-gradient-to-r from-[#1e1b4b] to-[#312e81] text-white text-[13px] font-semibold hover:opacity-90 transition shadow-sm">
                 MY REQUESTS
               </button>
               <button className="px-4 py-2 h-10 rounded-md bg-gradient-to-r from-[#1e1b4b] to-[#312e81] text-white text-[13px] font-semibold flex items-center gap-2 hover:opacity-90 transition shadow-sm">
@@ -226,19 +226,19 @@ export default function DashboardPage() {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
-            <div className="bg-gradient-to-br from-[#2e347b] to-[#12164a] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
+            <div className="bg-gradient-to-br from-[#3b82f6] to-[#1d4ed8] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
               <h3 className="text-[10px] font-bold uppercase tracking-wider opacity-90">Total</h3>
               <p className="text-[28px] font-bold leading-none mt-2">{stats.total}</p>
             </div>
-            <div className="bg-gradient-to-br from-[#8b5cf6] to-[#4c1d95] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
+            <div className="bg-gradient-to-br from-[#60a5fa] to-[#2563eb] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
               <h3 className="text-[10px] font-bold uppercase tracking-wider opacity-90">In Review</h3>
               <p className="text-[28px] font-bold leading-none mt-2">{stats.inReview}</p>
             </div>
-            <div className="bg-gradient-to-br from-[#f59e0b] to-[#9a3412] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
+            <div className="bg-gradient-to-br from-[#fbbf24] to-[#d97706] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
               <h3 className="text-[10px] font-bold uppercase tracking-wider opacity-90">Need Revision</h3>
               <p className="text-[28px] font-bold leading-none mt-2">{stats.needRevision}</p>
             </div>
-            <div className="bg-gradient-to-br from-[#10b981] to-[#064e3b] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
+            <div className="bg-gradient-to-br from-[#10b981] to-[#047857] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
               <h3 className="text-[10px] font-bold uppercase tracking-wider opacity-90">Completed</h3>
               <p className="text-[28px] font-bold leading-none mt-2">{stats.completed}</p>
             </div>
@@ -273,7 +273,12 @@ export default function DashboardPage() {
                 {/* Stepper */}
                 <div className="relative px-8 pt-2 pb-8 max-w-4xl mx-auto">
                   <div className="flex justify-between relative z-10">
-                    {currentProgress.steps.map((step, idx) => {
+                    {(() => {
+                      const lastCompletedIdx = currentProgress.steps.reduce(
+                        (last, s, i) => (s.completed ? i : last),
+                        -1
+                      );
+                      return currentProgress.steps.map((step, idx) => {
                       const isLast = idx === currentProgress.steps.length - 1;
                       const hasNext = idx < currentProgress.steps.length - 1;
                       const nextStep = hasNext ? currentProgress.steps[idx + 1] : null;
@@ -305,10 +310,12 @@ export default function DashboardPage() {
                       </div>
                       <p
                         className={`text-[13.5px] mt-2.5 text-center z-10 relative tracking-wide ${
-                          step.completed
-                            ? 'text-[#006c28]'
-                            : 'text-[#717682]'
-                        } ${step.current ? 'font-bold' : 'font-medium'}`}
+                          idx === lastCompletedIdx
+                            ? 'text-[#006c28] font-bold'
+                            : step.completed
+                            ? 'text-gray-700 font-medium'
+                            : 'text-[#717682] font-medium'
+                        }`}
                       >
                         {step.name}
                       </p>
@@ -318,8 +325,9 @@ export default function DashboardPage() {
                         </button>
                       )}
                     </div>
-                  );
-                })}
+                      );
+                    });
+                  })()}
               </div>
             </div>
             </>
