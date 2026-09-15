@@ -29,19 +29,28 @@ export default function ManagementDashboard() {
     .join(', ');
 
   const trendData = [
-    { label: 'Mar 24', submission: 3, completed: 1 },
-    { label: 'Apr 24', submission: 1, completed: 1 },
-    { label: 'May 24', submission: 2, completed: 1 },
-    { label: 'Jun 24', submission: 3, completed: 2 },
-    { label: 'Jul 24', submission: 2, completed: 1 },
-    { label: 'Aug 24', submission: 3, completed: 2 },
+    { label: 'Jan 24', submission: 95, completed: 60 },
+    { label: 'Feb 24', submission: 110, completed: 75 },
+    { label: 'Mar 24', submission: 85, completed: 50 },
+    { label: 'Apr 24', submission: 120, completed: 80 },
+    { label: 'May 24', submission: 98, completed: 70 },
+    { label: 'Jun 24', submission: 135, completed: 95 },
+    { label: 'Jul 24', submission: 105, completed: 65 },
+    { label: 'Aug 24', submission: 140, completed: 85 },
+    { label: 'Sep 24', submission: 115, completed: 80 },
+    { label: 'Oct 24', submission: 90, completed: 60 },
+    { label: 'Nov 24', submission: 80, completed: 50 },
+    { label: 'Dec 24', submission: 74, completed: 60 },
   ];
-  const maxTrendValue = 3;
+  const maxTrendValue = 180;
 
   const byDivision = [
     { name: 'DIREKTORAT IT DIGITAL', value: 342, color: 'bg-[#4361ee]' },
+    { name: 'DIVISI DIGITAL PRODUCT', value: 284, color: 'bg-[#a855f7]' },
     { name: 'HUMAN CAPITAL SERVICE OPERATIONS', value: 215, color: 'bg-[#f59e0b]' },
     { name: 'DIREKTORAT KEUANGAN DAN MANAJEMEN RESIKO', value: 189, color: 'bg-[#10b981]' },
+    { name: 'DIREKTORAT NETWORK', value: 166, color: 'bg-[#ec4899]' },
+    { name: 'DIVISI GOVERNMENT SERVICE', value: 125, color: 'bg-[#06b6d4]' },
   ];
   const maxDivisionValue = 342;
 
@@ -50,8 +59,9 @@ export default function ManagementDashboard() {
     { rank: 2, division: 'HC Service Operations', submitted: 215, completed: 205, rate: '95.5%', status: 'On Track' },
     { rank: 3, division: 'Direktorat Keuangan', submitted: 189, completed: 172, rate: '91.0%', status: 'On Track' },
     { rank: 4, division: 'Divisi Digital Product', submitted: 284, completed: 239, rate: '84.3%', status: 'At Risk' },
-    { rank: 5, division: 'Divisi Government Service', submitted: 125, completed: 91, rate: '72.4%', status: 'Critical' },
-    { rank: 6, division: 'Divisi General Support', submitted: 92, completed: 63, rate: '68.1%', status: 'Critical' },
+    { rank: 5, division: 'Direktorat Network', submitted: 166, completed: 132, rate: '79.5%', status: 'At Risk' },
+    { rank: 6, division: 'Divisi Government Service', submitted: 125, completed: 91, rate: '72.4%', status: 'Critical' },
+    { rank: 7, division: 'Divisi General Support', submitted: 92, completed: 63, rate: '68.1%', status: 'Critical' },
   ];
 
   const statusStyles: Record<string, string> = {
@@ -135,6 +145,7 @@ export default function ManagementDashboard() {
                 <option>Human Capital Service Operations</option>
                 <option>Direktorat Keuangan dan Manajemen Resiko</option>
                 <option>Divisi Digital Product</option>
+                <option>Direktorat Network</option>
                 <option>Divisi Government Service</option>
                 <option>Divisi General Support</option>
               </select>
@@ -165,7 +176,8 @@ export default function ManagementDashboard() {
           <div className="w-[120px]">
             <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Year</label>
             <div className="relative">
-              <select className="w-full appearance-none border-2 border-indigo-500 text-gray-700 text-[13px] rounded-md px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer">
+              <select className="w-full appearance-none border border-gray-300 text-gray-700 text-[13px] rounded-md px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer">
+                <option>All Year</option>
                 <option>2026</option>
               </select>
               <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -188,7 +200,7 @@ export default function ManagementDashboard() {
           <h3 className="text-[13px] font-semibold opacity-90">Approval Rate</h3>
           <p className="text-[32px] font-bold leading-none mt-3">87.4%</p>
           <p className="text-[12px] font-medium opacity-90 flex items-center gap-1 mt-3">
-            <TrendingDown className="w-3.5 h-3.5" />
+            <TrendingUp className="w-3.5 h-3.5" />
             Target KPI is &gt; 85%
           </p>
         </div>
@@ -235,7 +247,7 @@ export default function ManagementDashboard() {
         {/* Submission & Complete Trend */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
           <h3 className="text-[15px] font-bold text-gray-900">Submission & Complete Trend</h3>
-          <p className="text-[12px] text-gray-500 mt-0.5">Submissions and completions per month (6 months)</p>
+          <p className="text-[12px] text-gray-500 mt-0.5">Submissions and completions per month (12 months)</p>
           <div className="flex items-center gap-4 mt-3 mb-2">
             <div className="flex items-center gap-1.5">
               <div className="w-2.5 h-2.5 bg-[#4361ee] rounded-sm"></div>
@@ -247,17 +259,17 @@ export default function ManagementDashboard() {
             </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <div className="relative h-[160px] min-w-[380px] pt-6">
+          <div className="overflow-x-auto pb-2">
+            <div className="relative h-[180px] min-w-[640px] pt-8">
               <div className="absolute inset-0 flex flex-col justify-between pointer-events-none pb-8">
-                {[3, 2, 1, 0].map((val) => (
-                  <div key={val} className="w-full flex items-center relative pl-6">
-                    <span className="absolute left-0 w-6 text-[10px] text-gray-400 font-medium -mt-0.5">{val}</span>
+                {[180, 120, 60, 0].map((val) => (
+                  <div key={val} className="w-full flex items-center relative">
+                    <span className="sticky left-0 bg-white pr-2 w-9 text-left text-[10px] text-gray-400 font-medium -mt-0.5 z-10">{val}</span>
                     <div className="w-full border-t border-gray-100"></div>
                   </div>
                 ))}
               </div>
-              <div className="absolute inset-0 pl-9 pr-2 flex justify-between items-end pb-8">
+              <div className="absolute inset-0 pl-10 pr-4 flex justify-between items-end pb-8">
                 {trendData.map((d, i) => (
                   <div key={i} className="flex flex-col items-center gap-1 h-full justify-end relative">
                     <div className="flex items-end gap-1.5 h-full">

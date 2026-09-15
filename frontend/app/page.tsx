@@ -224,6 +224,43 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          {/* Filters */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 px-5 py-4 mb-6">
+            <div className="flex flex-wrap items-end gap-4 sm:gap-6">
+              <div className="w-[180px]">
+                <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Month</label>
+                <div className="relative">
+                  <select className="w-full appearance-none border border-gray-300 text-gray-700 text-[13px] rounded-md px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer">
+                    <option>All month</option>
+                    <option>January</option>
+                    <option>February</option>
+                    <option>March</option>
+                    <option>April</option>
+                    <option>May</option>
+                    <option>June</option>
+                    <option>July</option>
+                    <option>August</option>
+                    <option>September</option>
+                    <option>October</option>
+                    <option>November</option>
+                    <option>December</option>
+                  </select>
+                  <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+              </div>
+              <div className="w-[120px]">
+                <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Year</label>
+                <div className="relative">
+                  <select className="w-full appearance-none border border-gray-300 text-gray-700 text-[13px] rounded-md px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer">
+                    <option>All year</option>
+                    <option>2026</option>
+                  </select>
+                  <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
             <div className="bg-gradient-to-br from-[#3b82f6] to-[#1d4ed8] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">

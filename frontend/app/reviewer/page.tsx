@@ -26,12 +26,13 @@ export default function ReviewerDashboard() {
   const maxChartValue = 150;
 
   const divisionData = [
-    { name: 'DIVISI DIGITAL PRODUCT', value: 355, max: 400, color: 'bg-[#4361ee]' },
-    { name: 'DIVISI GOVERNMENT SERVICE', value: 268, max: 400, color: 'bg-[#b05bff]' },
-    { name: 'DIREKTORAT IT DIGITAL', value: 205, max: 400, color: 'bg-[#2a9d8f]' },
-    { name: 'HUMAN CAPITAL SERVICE OPS', value: 176, max: 400, color: 'bg-[#f77f00]' },
-    { name: 'DIVISI DATA & ANALYTICS', value: 143, max: 400, color: 'bg-[#4cc9f0]' },
-    { name: 'DIREKTORAT KEUANGAN & RISIKO', value: 100, max: 400, color: 'bg-[#8e9aaf]' },
+    { name: 'Direktorat IT Digital', value: 342, max: 342, color: 'bg-[#4361ee]' },
+    { name: 'Divisi Digital Product', value: 284, max: 342, color: 'bg-[#a855f7]' },
+    { name: 'HC Service Operations', value: 215, max: 342, color: 'bg-[#f59e0b]' },
+    { name: 'Direktorat Keuangan', value: 189, max: 342, color: 'bg-[#10b981]' },
+    { name: 'Direktorat Network', value: 166, max: 342, color: 'bg-[#ec4899]' },
+    { name: 'Divisi Government Service', value: 125, max: 342, color: 'bg-[#06b6d4]' },
+    { name: 'Divisi General Support', value: 92, max: 342, color: 'bg-[#ef4444]' },
   ];
 
   const awaitingReview = [
@@ -68,11 +69,12 @@ export default function ReviewerDashboard() {
               <select className="w-full appearance-none border border-gray-300 text-gray-700 text-[13px] rounded-md px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer">
                 <option>All divisions</option>
                 <option>Direktorat IT Digital</option>
-                <option>Divisi Government Service</option>
-                <option>Divisi Digital Product</option>
                 <option>Human Capital Service Operations</option>
-                <option>Divisi Data & Analytics</option>
-                <option>Direktorat Keuangan & Resiko</option>
+                <option>Direktorat Keuangan dan Manajemen Resiko</option>
+                <option>Divisi Digital Product</option>
+                <option>Direktorat Network</option>
+                <option>Divisi Government Service</option>
+                <option>Divisi General Support</option>
               </select>
               <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
@@ -102,6 +104,7 @@ export default function ReviewerDashboard() {
             <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Year</label>
             <div className="relative">
               <select className="w-full appearance-none border border-gray-300 text-gray-700 text-[13px] rounded-md px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer">
+                <option>All year</option>
                 <option>2026</option>
               </select>
               <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />

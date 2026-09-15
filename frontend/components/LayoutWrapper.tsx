@@ -33,11 +33,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
       <aside className="w-16 bg-[#e6e8eb] flex flex-col items-center justify-between py-4 border-r border-gray-200 fixed h-screen top-0 left-0 z-50">
         <div className="flex flex-col items-center gap-6">
           <div className="flex items-center justify-center w-10 h-10 bg-white rounded-full shadow-sm">
-            <svg viewBox="0 0 100 120" className="w-6 h-7" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M0 25 Q50 15 100 25 L100 40 Q50 30 0 40 Z" fill="#6a9ad1" />
-              <path d="M0 45 Q50 35 100 45 L100 48 Q50 38 0 48 Z" fill="#a4cae8" />
-              <path d="M0 53 Q50 43 100 53 L100 65 C85 62 75 58 75 58 L52 58 L52 72 L68 72 C64 85 50 90 50 90 C30 80 28 65 30 55 L0 53 C0 90 50 120 50 120 C50 120 100 95 100 65 Z" fill="#00205b" />
-            </svg>
+            <img src="/logo.png" alt="GARD Logo" className="w-7 h-7 object-contain" />
           </div>
           <div className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center cursor-pointer shadow-sm">
             <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#00205b]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
