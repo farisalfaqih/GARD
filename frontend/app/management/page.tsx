@@ -325,22 +325,22 @@ export default function ManagementDashboard() {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-gray-100">
-                <th className="pb-2 text-[10px] font-bold text-gray-400 uppercase tracking-wide">Rank</th>
-                <th className="pb-2 text-[10px] font-bold text-gray-400 uppercase tracking-wide">Division</th>
-                <th className="pb-2 text-[10px] font-bold text-gray-400 uppercase tracking-wide text-right">Submitted</th>
-                <th className="pb-2 text-[10px] font-bold text-gray-400 uppercase tracking-wide text-right">Completed</th>
-                <th className="pb-2 text-[10px] font-bold text-gray-400 uppercase tracking-wide text-right">Rate</th>
+                <th className="pb-2 text-[10px] font-bold text-gray-400 uppercase tracking-wide text-center">Rank</th>
+                <th className="pb-2 text-[10px] font-bold text-gray-400 uppercase tracking-wide text-left">Division</th>
+                <th className="pb-2 text-[10px] font-bold text-gray-400 uppercase tracking-wide text-center">Submitted</th>
+                <th className="pb-2 text-[10px] font-bold text-gray-400 uppercase tracking-wide text-center">Completed</th>
+                <th className="pb-2 text-[10px] font-bold text-gray-400 uppercase tracking-wide text-center">Rate</th>
                 <th className="pb-2 text-[10px] font-bold text-gray-400 uppercase tracking-wide text-right">Status</th>
               </tr>
             </thead>
             <tbody>
               {leaderboard.map((row) => (
                 <tr key={row.rank} className="border-b border-gray-50 last:border-0">
-                  <td className="py-3 text-[13px] font-semibold text-gray-500">#{row.rank}</td>
-                  <td className="py-3 text-[13px] font-bold text-gray-900">{row.division}</td>
-                  <td className="py-3 text-[13px] text-gray-600 text-right">{row.submitted}</td>
-                  <td className="py-3 text-[13px] text-gray-600 text-right">{row.completed}</td>
-                  <td className="py-3 text-[13px] font-bold text-gray-900 text-right">{row.rate}</td>
+                  <td className="py-3 text-[13px] font-semibold text-gray-500 text-center">#{row.rank}</td>
+                  <td className="py-3 text-[13px] font-bold text-gray-900 text-left">{row.division}</td>
+                  <td className="py-3 text-[13px] text-gray-600 text-center">{row.submitted}</td>
+                  <td className="py-3 text-[13px] text-gray-600 text-center">{row.completed}</td>
+                  <td className="py-3 text-[13px] font-bold text-gray-900 text-center">{row.rate}</td>
                   <td className="py-3 text-right">
                     <span className={`px-2 py-1 rounded-full text-[10px] font-bold ${statusStyles[row.status]}`}>{row.status}</span>
                   </td>
