@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect, useMemo } from 'react';
 import { 
   RefreshCw, 
   ClipboardList, 
@@ -8,7 +9,17 @@ import {
 } from 'lucide-react';
 
 export default function ReviewerDashboard() {
-  const chartData = [
+  const [selectedMonth, setSelectedMonth] = useState('All month');
+  const [selectedDivision, setSelectedDivision] = useState('All divisions');
+  const [isAnimated, setIsAnimated] = useState(false);
+
+  useEffect(() => {
+    setIsAnimated(false);
+    const timer = setTimeout(() => setIsAnimated(true), 100);
+    return () => clearTimeout(timer);
+  }, [selectedMonth, selectedDivision]);
+
+  const baseChartData = [
     { label: 'Jan 26', submission: 80, completed: 50 },
     { label: 'Feb 26', submission: 95, completed: 68 },
     { label: 'Mar 26', submission: 82, completed: 60 },
@@ -23,7 +34,98 @@ export default function ReviewerDashboard() {
     { label: 'Dec 26', submission: 132, completed: 105 },
   ];
 
-  const maxChartValue = 150;
+  const divisionMap: Record<string, number> = {
+    'Direktorat IT Digital': 342,
+    'Divisi Digital Product': 284,
+    'Human Capital Service Operations': 215,
+    'Direktorat Keuangan dan Manajemen Resiko': 189,
+    'Direktorat Network': 166,
+    'Divisi Government Service': 125,
+    'Divisi General Support': 92,
+  };
+
+  const chartData = useMemo(() => {
+    if (selectedDivision === 'All divisions') return baseChartData;
+    const ratio = (divisionMap[selectedDivision] || 1247) / 1247;
+    return baseChartData.map(d => ({
+      ...d,
+      submission: Math.round(d.submission * ratio),
+      completed: Math.round(d.completed * ratio)
+    }));
+  }, [selectedDivision]);
+
+  const stats = useMemo(() => {
+    const ratio = selectedDivision === 'All divisions' ? 1 : (divisionMap[selectedDivision] || 1247) / 1247;
+    return {
+      total: Math.round(1247 * ratio),
+      inReview: Math.round(325 * ratio),
+      needRevision: Math.round(148 * ratio),
+      approved: Math.round(214 * ratio),
+      completed: Math.round(560 * ratio),
+      needPir: Math.round(205 * ratio),
+      pir: Math.round(355 * ratio),
+    };
+  }, [selectedDivision]);
+
+  const displayChartData = useMemo(() => {
+    if (selectedMonth === 'All month') return chartData;
+
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const monthIndex = months.indexOf(selectedMonth);
+    const monthData = chartData[monthIndex];
+    if (!monthData) return chartData;
+
+    const daysInMonth: Record<string, number> = {
+      January: 31, February: 28, March: 31, April: 30, May: 31, June: 30,
+      July: 31, August: 31, September: 30, October: 31, November: 30, December: 31
+    };
+    const days = daysInMonth[selectedMonth] || 31;
+    
+    const dailyData = [];
+    let remSub = monthData.submission;
+    let remComp = monthData.completed;
+
+    for (let i = 1; i <= days; i++) {
+      let sub = Math.floor(monthData.submission / days);
+      let comp = Math.floor(monthData.completed / days);
+      
+      sub += (i % 3 === 0) ? 2 : (i % 2 === 0) ? -1 : 1;
+      comp += (i % 4 === 0) ? 2 : (i % 3 === 0) ? -1 : 0;
+      
+      sub = Math.max(0, sub);
+      comp = Math.max(0, comp);
+
+      const finalSub = i === days ? remSub : Math.min(sub, remSub);
+      const finalComp = i === days ? remComp : Math.min(comp, remComp);
+
+      dailyData.push({
+        label: `${i} ${selectedMonth.slice(0, 3)}`,
+        submission: finalSub,
+        completed: finalComp,
+      });
+
+      remSub -= finalSub;
+      remComp -= finalComp;
+    }
+    return dailyData;
+  }, [selectedMonth, chartData]);
+
+  const maxChartValue = useMemo(() => {
+    if (selectedMonth === 'All month') return 150;
+    let max = 0;
+    displayChartData.forEach(d => {
+      if (d.submission > max) max = d.submission;
+      if (d.completed > max) max = d.completed;
+    });
+    return Math.ceil(max / 5) * 5 || 5;
+  }, [selectedMonth, displayChartData]);
+
+  const yAxisValues = [
+    maxChartValue,
+    Math.round((maxChartValue * 2) / 3),
+    Math.round(maxChartValue / 3),
+    0
+  ];
 
   const divisionData = [
     { name: 'Direktorat IT Digital', value: 342, max: 342, color: 'bg-[#4361ee]' },
@@ -66,15 +168,19 @@ export default function ReviewerDashboard() {
           <div className="flex-1 max-w-[300px]">
             <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Division</label>
             <div className="relative">
-              <select className="w-full appearance-none border border-gray-300 text-gray-700 text-[13px] rounded-md px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer">
-                <option>All divisions</option>
-                <option>Direktorat IT Digital</option>
-                <option>Human Capital Service Operations</option>
-                <option>Direktorat Keuangan dan Manajemen Resiko</option>
-                <option>Divisi Digital Product</option>
-                <option>Direktorat Network</option>
-                <option>Divisi Government Service</option>
-                <option>Divisi General Support</option>
+              <select 
+                className="w-full appearance-none border border-gray-300 text-gray-700 text-[13px] rounded-md px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer"
+                value={selectedDivision}
+                onChange={(e) => setSelectedDivision(e.target.value)}
+              >
+                <option value="All divisions">All divisions</option>
+                <option value="Direktorat IT Digital">Direktorat IT Digital</option>
+                <option value="Human Capital Service Operations">Human Capital Service Operations</option>
+                <option value="Direktorat Keuangan dan Manajemen Resiko">Direktorat Keuangan dan Manajemen Resiko</option>
+                <option value="Divisi Digital Product">Divisi Digital Product</option>
+                <option value="Direktorat Network">Direktorat Network</option>
+                <option value="Divisi Government Service">Divisi Government Service</option>
+                <option value="Divisi General Support">Divisi General Support</option>
               </select>
               <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
@@ -82,20 +188,24 @@ export default function ReviewerDashboard() {
           <div className="w-[180px]">
             <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Month</label>
             <div className="relative">
-              <select className="w-full appearance-none border border-gray-300 text-gray-700 text-[13px] rounded-md px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer">
-                <option>All month</option>
-                <option>January</option>
-                <option>February</option>
-                <option>March</option>
-                <option>April</option>
-                <option>May</option>
-                <option>June</option>
-                <option>July</option>
-                <option>August</option>
-                <option>September</option>
-                <option>October</option>
-                <option>November</option>
-                <option>December</option>
+              <select 
+                className="w-full appearance-none border border-gray-300 text-gray-700 text-[13px] rounded-md px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+              >
+                <option value="All month">All month</option>
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
               </select>
               <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
@@ -117,32 +227,32 @@ export default function ReviewerDashboard() {
       <div className="grid grid-cols-5 gap-4 mb-6">
         <div className="bg-gradient-to-br from-[#3b82f6] to-[#1d4ed8] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
           <h3 className="text-[10px] font-bold uppercase tracking-wider opacity-90">Total</h3>
-          <p className="text-[28px] font-bold leading-none mt-2">1247</p>
+          <p className="text-[28px] font-bold leading-none mt-2">{stats.total}</p>
         </div>
         <div className="bg-gradient-to-br from-[#60a5fa] to-[#2563eb] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
           <h3 className="text-[10px] font-bold uppercase tracking-wider opacity-90">In Review</h3>
-          <p className="text-[28px] font-bold leading-none mt-2">325</p>
+          <p className="text-[28px] font-bold leading-none mt-2">{stats.inReview}</p>
         </div>
         <div className="bg-gradient-to-br from-[#fbbf24] to-[#d97706] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
           <h3 className="text-[10px] font-bold uppercase tracking-wider opacity-90">Need Revision</h3>
-          <p className="text-[28px] font-bold leading-none mt-2">148</p>
+          <p className="text-[28px] font-bold leading-none mt-2">{stats.needRevision}</p>
         </div>
         <div className="bg-gradient-to-br from-[#a78bfa] to-[#7c3aed] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
           <h3 className="text-[10px] font-bold uppercase tracking-wider opacity-90">Approved Use Case</h3>
-          <p className="text-[28px] font-bold leading-none mt-2">214</p>
+          <p className="text-[28px] font-bold leading-none mt-2">{stats.approved}</p>
         </div>
         <div className="bg-gradient-to-br from-[#10b981] to-[#047857] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] relative hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
           <h3 className="text-[10px] font-bold uppercase tracking-wider opacity-90">Completed</h3>
           <div className="flex items-end justify-between mt-2">
-            <p className="text-[28px] font-bold leading-none">560</p>
+            <p className="text-[28px] font-bold leading-none">{stats.completed}</p>
             <div className="text-right flex flex-col gap-0.5">
               <div className="text-[9px] font-semibold flex items-center justify-end gap-1.5 opacity-90">
                 <span>Need PIR</span>
-                <span className="w-6 text-right">205</span>
+                <span className="w-6 text-right">{stats.needPir}</span>
               </div>
               <div className="text-[9px] font-semibold flex items-center justify-end gap-1.5 opacity-90">
                 <span>PIR</span>
-                <span className="w-6 text-right">355</span>
+                <span className="w-6 text-right">{stats.pir}</span>
               </div>
             </div>
           </div>
@@ -167,40 +277,55 @@ export default function ReviewerDashboard() {
         </div>
 
         {/* Custom Bar Chart */}
-        <div className="relative h-[220px] w-full pt-6">
-          {/* Y-axis lines */}
-          <div className="absolute inset-0 flex flex-col justify-between pointer-events-none pb-8">
-            {[150, 100, 50, 0].map((val) => (
-              <div key={val} className="w-full flex items-center relative pl-8">
-                <span className="absolute left-0 w-8 text-[10px] text-gray-400 font-medium -mt-0.5">{val}</span>
-                <div className="w-full border-t border-gray-100"></div>
-              </div>
-            ))}
-          </div>
-
-          {/* Bars container */}
-          <div className="absolute inset-0 pl-12 pr-6 flex justify-between items-end pb-8">
-            {chartData.map((d, i) => (
-              <div key={i} className="flex flex-col items-center gap-1 h-full justify-end relative group">
-                <div className="flex items-end gap-2 h-full">
-                  {/* Submission Bar */}
-                  <div 
-                    className="w-[20px] bg-[#4361ee] rounded-t-sm relative transition-all duration-300 hover:opacity-80"
-                    style={{ height: `${(d.submission / maxChartValue) * 100}%` }}
-                  >
-                    <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-[9px] font-bold text-[#4361ee]">{d.submission}</span>
-                  </div>
-                  {/* Completed Bar */}
-                  <div 
-                    className="w-[20px] bg-[#2a9d8f] rounded-t-sm relative transition-all duration-300 hover:opacity-80"
-                    style={{ height: `${(d.completed / maxChartValue) * 100}%` }}
-                  >
-                    <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-[9px] font-bold text-[#2a9d8f]">{d.completed}</span>
-                  </div>
+        <div className="relative h-[220px] w-full pt-6 overflow-x-auto overflow-y-hidden custom-scrollbar">
+          <div className="min-w-[700px] h-full relative pb-8">
+            {/* Y-axis lines */}
+            <div className="absolute inset-0 flex flex-col justify-between pointer-events-none pb-8">
+              {yAxisValues.map((val, idx) => (
+                <div key={idx} className="w-full flex items-center relative pl-8">
+                  <span className="absolute left-0 w-8 text-[10px] text-gray-400 font-medium -mt-0.5">{val}</span>
+                  <div className="w-full border-t border-gray-100"></div>
                 </div>
-                <span className="absolute -bottom-6 text-[10px] text-gray-500 font-medium whitespace-nowrap">{d.label}</span>
-              </div>
-            ))}
+              ))}
+            </div>
+
+            {/* Bars container */}
+            <div className="absolute inset-0 pl-12 pr-6 flex justify-between items-end pb-8">
+              {displayChartData.map((d, i) => (
+                <div key={i} className="flex flex-col items-center gap-1 h-full justify-end relative group">
+                  <div className={`flex items-end h-full ${selectedMonth === 'All month' ? 'gap-2' : 'gap-1'}`}>
+                    {/* Submission Bar */}
+                    <div 
+                      className={`${selectedMonth === 'All month' ? 'w-[20px]' : 'w-[8px] sm:w-[10px]'} bg-[#4361ee] rounded-t-sm relative transition-all duration-1000 ease-out hover:opacity-80`}
+                      style={{ height: isAnimated ? `${(d.submission / maxChartValue) * 100}%` : '0%' }}
+                    >
+                      {selectedMonth === 'All month' && (
+                        <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-[9px] font-bold text-[#4361ee] opacity-0 group-hover:opacity-100 transition-opacity">{d.submission}</span>
+                      )}
+                    </div>
+                    {/* Completed Bar */}
+                    <div 
+                      className={`${selectedMonth === 'All month' ? 'w-[20px]' : 'w-[8px] sm:w-[10px]'} bg-[#2a9d8f] rounded-t-sm relative transition-all duration-1000 ease-out hover:opacity-80`}
+                      style={{ height: isAnimated ? `${(d.completed / maxChartValue) * 100}%` : '0%' }}
+                    >
+                      {selectedMonth === 'All month' && (
+                        <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-[9px] font-bold text-[#2a9d8f] opacity-0 group-hover:opacity-100 transition-opacity">{d.completed}</span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Tooltip for daily view */}
+                  {selectedMonth !== 'All month' && (
+                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
+                      <p>Sub: {d.submission}</p>
+                      <p>Comp: {d.completed}</p>
+                    </div>
+                  )}
+
+                  <span className={`absolute -bottom-6 text-[10px] text-gray-500 font-medium whitespace-nowrap ${selectedMonth !== 'All month' ? 'scale-75 origin-top' : ''}`}>{d.label}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

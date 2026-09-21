@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect, useMemo } from 'react';
 import {
   RefreshCw,
   ClipboardList,
@@ -10,25 +11,37 @@ import {
 } from 'lucide-react';
 
 export default function ManagementDashboard() {
-  const statusDistribution = [
+  const [selectedMonth, setSelectedMonth] = useState('All month');
+  const [selectedDivision, setSelectedDivision] = useState('All divisions');
+  const [isAnimated, setIsAnimated] = useState(false);
+
+  useEffect(() => {
+    setIsAnimated(false);
+    const timer = setTimeout(() => setIsAnimated(true), 100);
+    return () => clearTimeout(timer);
+  }, [selectedMonth, selectedDivision]);
+
+  const divisionMap: Record<string, number> = {
+    'Direktorat IT Digital': 342,
+    'Divisi Digital Product': 284,
+    'Human Capital Service Operations': 215,
+    'Direktorat Keuangan dan Manajemen Resiko': 189,
+    'Direktorat Network': 166,
+    'Divisi Government Service': 125,
+    'Divisi General Support': 92,
+  };
+
+  const currentRatio = useMemo(() => {
+    return selectedDivision === 'All divisions' ? 1 : (divisionMap[selectedDivision] || 1247) / 1247;
+  }, [selectedDivision]);
+
+  const baseStatusDistribution = [
     { label: 'Need Revision', value: 123, color: '#f59e0b' },
     { label: 'Approved Use Case', value: 321, color: '#a855f7' },
     { label: 'Completed', value: 830, color: '#22c55e' },
   ];
-  const statusDisplayTotal = 1247;
-  const statusDonutTotal = statusDistribution.reduce((sum, s) => sum + s.value, 0);
 
-  let donutCursor = 0;
-  const donutStops = statusDistribution
-    .map((s) => {
-      const start = (donutCursor / statusDonutTotal) * 360;
-      donutCursor += s.value;
-      const end = (donutCursor / statusDonutTotal) * 360;
-      return `${s.color} ${start}deg ${end}deg`;
-    })
-    .join(', ');
-
-  const trendData = [
+  const baseTrendData = [
     { label: 'Jan 24', submission: 95, completed: 60 },
     { label: 'Feb 24', submission: 110, completed: 75 },
     { label: 'Mar 24', submission: 85, completed: 50 },
@@ -42,7 +55,128 @@ export default function ManagementDashboard() {
     { label: 'Nov 24', submission: 80, completed: 50 },
     { label: 'Dec 24', submission: 74, completed: 60 },
   ];
-  const maxTrendValue = 180;
+
+  const chartData = useMemo(() => {
+    return baseTrendData.map(d => ({
+      ...d,
+      submission: Math.round(d.submission * currentRatio),
+      completed: Math.round(d.completed * currentRatio)
+    }));
+  }, [currentRatio]);
+
+  const currentDonutTotal = useMemo(() => {
+    if (selectedMonth === 'All month') {
+      return Math.round(1247 * currentRatio);
+    }
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const monthIndex = months.indexOf(selectedMonth);
+    const monthData = chartData[monthIndex];
+    return monthData ? monthData.submission : Math.round(1247 * currentRatio);
+  }, [selectedMonth, currentRatio, chartData]);
+
+  const statusDistribution = useMemo(() => {
+    if (selectedDivision === 'All divisions' && selectedMonth === 'All month') {
+      return baseStatusDistribution;
+    }
+    
+    // Deterministic variation so slices visibly change size
+    const divVar = (selectedDivision.length % 5) - 2; 
+    const monthVar = (selectedMonth.length % 5) - 2;
+    const variation = divVar + monthVar;
+    
+    let p1 = Math.max(0.05, 0.096 + (variation * 0.02));
+    let p2 = Math.max(0.1, 0.252 - (variation * 0.015));
+    let p3 = Math.max(0, 1 - p1 - p2);
+    
+    const val1 = Math.round(currentDonutTotal * p1);
+    const val2 = Math.round(currentDonutTotal * p2);
+    const val3 = currentDonutTotal - val1 - val2; 
+    
+    return [
+      { label: 'Need Revision', value: val1, color: '#f59e0b' },
+      { label: 'Approved Use Case', value: val2, color: '#a855f7' },
+      { label: 'Completed', value: val3, color: '#22c55e' },
+    ];
+  }, [selectedDivision, selectedMonth, currentDonutTotal]);
+
+  const statusDonutTotal = statusDistribution.reduce((sum, s) => sum + s.value, 0);
+
+  let donutCursor = 0;
+  const donutStops = statusDistribution
+    .map((s) => {
+      const start = statusDonutTotal > 0 ? (donutCursor / statusDonutTotal) * 360 : 0;
+      donutCursor += s.value;
+      const end = statusDonutTotal > 0 ? (donutCursor / statusDonutTotal) * 360 : 0;
+      return `${s.color} ${start}deg ${end}deg`;
+    })
+    .join(', ');
+
+  const displayChartData = useMemo(() => {
+    if (selectedMonth === 'All month') return chartData;
+
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const monthIndex = months.indexOf(selectedMonth);
+    const monthData = chartData[monthIndex];
+    if (!monthData) return chartData;
+
+    const daysInMonth: Record<string, number> = {
+      January: 31, February: 28, March: 31, April: 30, May: 31, June: 30,
+      July: 31, August: 31, September: 30, October: 31, November: 30, December: 31
+    };
+    const days = daysInMonth[selectedMonth] || 31;
+    
+    const dailyData = [];
+    let remSub = monthData.submission;
+    let remComp = monthData.completed;
+
+    for (let i = 1; i <= days; i++) {
+      let sub = Math.floor(monthData.submission / days);
+      let comp = Math.floor(monthData.completed / days);
+      
+      sub += (i % 3 === 0) ? 2 : (i % 2 === 0) ? -1 : 1;
+      comp += (i % 4 === 0) ? 2 : (i % 3 === 0) ? -1 : 0;
+      
+      sub = Math.max(0, sub);
+      comp = Math.max(0, comp);
+
+      const finalSub = i === days ? remSub : Math.min(sub, remSub);
+      const finalComp = i === days ? remComp : Math.min(comp, remComp);
+
+      dailyData.push({
+        label: `${i} ${selectedMonth.slice(0, 3)}`,
+        submission: finalSub,
+        completed: finalComp,
+      });
+
+      remSub -= finalSub;
+      remComp -= finalComp;
+    }
+    return dailyData;
+  }, [selectedMonth, chartData]);
+
+  const maxChartValue = useMemo(() => {
+    if (selectedMonth === 'All month') {
+      let max = 0;
+      chartData.forEach(d => {
+        if (d.submission > max) max = d.submission;
+        if (d.completed > max) max = d.completed;
+      });
+      return Math.ceil((max || 180) / 10) * 10;
+    }
+    let max = 0;
+    displayChartData.forEach(d => {
+      if (d.submission > max) max = d.submission;
+      if (d.completed > max) max = d.completed;
+    });
+    return Math.ceil((max || 5) / 5) * 5;
+  }, [selectedMonth, displayChartData, chartData]);
+
+  const yAxisValues = [
+    maxChartValue,
+    Math.round((maxChartValue * 2) / 3),
+    Math.round(maxChartValue / 3),
+    0
+  ];
 
   const byDivision = [
     { name: 'DIREKTORAT IT DIGITAL', value: 342, color: 'bg-[#4361ee]' },
@@ -72,7 +206,7 @@ export default function ManagementDashboard() {
 
   const bottlenecks = [
     {
-      name: 'Operations',
+      name: 'Divisi General Support',
       stuck: 23,
       segments: [
         { label: 'DG Council', value: 8, color: '#4361ee' },
@@ -82,7 +216,7 @@ export default function ManagementDashboard() {
       ],
     },
     {
-      name: 'Human Capital',
+      name: 'Divisi Government Service',
       stuck: 16,
       segments: [
         { label: 'DG Council', value: 6, color: '#4361ee' },
@@ -92,7 +226,7 @@ export default function ManagementDashboard() {
       ],
     },
     {
-      name: 'Marketing',
+      name: 'Direktorat Network',
       stuck: 15,
       segments: [
         { label: 'DG Council', value: 5, color: '#4361ee' },
@@ -102,7 +236,7 @@ export default function ManagementDashboard() {
       ],
     },
     {
-      name: 'Finance',
+      name: 'Divisi Digital Product',
       stuck: 8,
       segments: [
         { label: 'DG Council', value: 3, color: '#4361ee' },
@@ -139,15 +273,19 @@ export default function ManagementDashboard() {
           <div className="flex-1 min-w-[200px] max-w-[300px]">
             <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Division</label>
             <div className="relative">
-              <select className="w-full appearance-none border border-gray-300 text-gray-700 text-[13px] rounded-md px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer">
-                <option>All divisions</option>
-                <option>Direktorat IT Digital</option>
-                <option>Human Capital Service Operations</option>
-                <option>Direktorat Keuangan dan Manajemen Resiko</option>
-                <option>Divisi Digital Product</option>
-                <option>Direktorat Network</option>
-                <option>Divisi Government Service</option>
-                <option>Divisi General Support</option>
+              <select 
+                className="w-full appearance-none border border-gray-300 text-gray-700 text-[13px] rounded-md px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer"
+                value={selectedDivision}
+                onChange={(e) => setSelectedDivision(e.target.value)}
+              >
+                <option value="All divisions">All divisions</option>
+                <option value="Direktorat IT Digital">Direktorat IT Digital</option>
+                <option value="Human Capital Service Operations">Human Capital Service Operations</option>
+                <option value="Direktorat Keuangan dan Manajemen Resiko">Direktorat Keuangan dan Manajemen Resiko</option>
+                <option value="Divisi Digital Product">Divisi Digital Product</option>
+                <option value="Direktorat Network">Direktorat Network</option>
+                <option value="Divisi Government Service">Divisi Government Service</option>
+                <option value="Divisi General Support">Divisi General Support</option>
               </select>
               <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
@@ -155,20 +293,24 @@ export default function ManagementDashboard() {
           <div className="w-[180px]">
             <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Month</label>
             <div className="relative">
-              <select className="w-full appearance-none border border-gray-300 text-gray-700 text-[13px] rounded-md px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer">
-                <option>All month</option>
-                <option>January</option>
-                <option>February</option>
-                <option>March</option>
-                <option>April</option>
-                <option>May</option>
-                <option>June</option>
-                <option>July</option>
-                <option>August</option>
-                <option>September</option>
-                <option>October</option>
-                <option>November</option>
-                <option>December</option>
+              <select 
+                className="w-full appearance-none border border-gray-300 text-gray-700 text-[13px] rounded-md px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+              >
+                <option value="All month">All month</option>
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
               </select>
               <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
@@ -190,7 +332,7 @@ export default function ManagementDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div className="bg-gradient-to-br from-[#3b82f6] to-[#1d4ed8] rounded-xl p-5 text-white shadow-sm hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
           <h3 className="text-[13px] font-semibold opacity-90">Total Assessments Received</h3>
-          <p className="text-[32px] font-bold leading-none mt-3">1,247</p>
+          <p className="text-[32px] font-bold leading-none mt-3">{Math.round(1247 * currentRatio).toLocaleString()}</p>
           <p className="text-[12px] font-medium opacity-90 flex items-center gap-1 mt-3">
             <TrendingUp className="w-3.5 h-3.5" />
             +12.3% vs last month
@@ -206,7 +348,7 @@ export default function ManagementDashboard() {
         </div>
         <div className="bg-gradient-to-br from-[#ef4444] to-[#b91c1c] rounded-xl p-5 text-white shadow-sm hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
           <h3 className="text-[13px] font-semibold opacity-90">Pending PIR</h3>
-          <p className="text-[32px] font-bold leading-none mt-3">23</p>
+          <p className="text-[32px] font-bold leading-none mt-3">{Math.round(23 * currentRatio)}</p>
           <p className="text-[12px] font-medium opacity-90 flex items-center gap-1 mt-3">
             <TrendingDown className="w-3.5 h-3.5" />
             +4 New alerts this week
@@ -217,27 +359,29 @@ export default function ManagementDashboard() {
       {/* Status distribution / Trend / By division */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         {/* Status distribution */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
-          <h3 className="text-[15px] font-bold text-gray-900">Status distribution</h3>
-          <p className="text-[12px] text-gray-500 mt-0.5 mb-6">All requests in your scope</p>
-          <div className="flex flex-wrap items-center gap-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 flex flex-col h-full">
+          <div>
+            <h3 className="text-[15px] font-bold text-gray-900">Status distribution</h3>
+            <p className="text-[12px] text-gray-500 mt-0.5 mb-8">All requests in your scope</p>
+          </div>
+          <div className="flex flex-wrap items-center justify-around gap-6 flex-1 w-full pb-2">
             <div
-              className="relative w-[140px] h-[140px] rounded-full flex items-center justify-center shrink-0"
+              className="relative w-[150px] h-[150px] rounded-full flex items-center justify-center shrink-0"
               style={{ background: `conic-gradient(${donutStops})` }}
             >
-              <div className="w-[92px] h-[92px] rounded-full bg-white flex flex-col items-center justify-center">
-                <span className="text-[22px] font-bold text-gray-900 leading-none">{statusDisplayTotal.toLocaleString()}</span>
-                <span className="text-[10px] text-gray-400 font-medium mt-1">total</span>
+              <div className="w-[100px] h-[100px] rounded-full bg-white flex flex-col items-center justify-center">
+                <span className="text-[24px] font-bold text-gray-900 leading-none">{currentDonutTotal.toLocaleString()}</span>
+                <span className="text-[11px] text-gray-400 font-medium mt-1">total</span>
               </div>
             </div>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-4 flex-1 min-w-[160px]">
               {statusDistribution.map((s) => (
-                <div key={s.label} className="flex items-center justify-between gap-6">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: s.color }}></span>
-                    <span className="text-[12px] text-gray-600 font-medium">{s.label}</span>
+                <div key={s.label} className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.color }}></span>
+                    <span className="text-[13px] text-gray-600 font-medium">{s.label}</span>
                   </div>
-                  <span className="text-[13px] font-bold text-gray-900">{s.value}</span>
+                  <span className="text-[14px] font-bold text-gray-900">{s.value}</span>
                 </div>
               ))}
             </div>
@@ -259,34 +403,44 @@ export default function ManagementDashboard() {
             </div>
           </div>
 
-          <div className="overflow-x-auto pb-2">
-            <div className="relative h-[180px] min-w-[640px] pt-8">
+          <div className="relative h-[220px] w-full pt-6 overflow-x-auto overflow-y-hidden custom-scrollbar">
+            <div className="min-w-[700px] h-full relative pb-8">
               <div className="absolute inset-0 flex flex-col justify-between pointer-events-none pb-8">
-                {[180, 120, 60, 0].map((val) => (
-                  <div key={val} className="w-full flex items-center relative">
-                    <span className="sticky left-0 bg-white pr-2 w-9 text-left text-[10px] text-gray-400 font-medium -mt-0.5 z-10">{val}</span>
+                {yAxisValues.map((val, idx) => (
+                  <div key={idx} className="w-full flex items-center relative pl-8">
+                    <span className="absolute left-0 w-8 text-[10px] text-gray-400 font-medium -mt-0.5">{val}</span>
                     <div className="w-full border-t border-gray-100"></div>
                   </div>
                 ))}
               </div>
-              <div className="absolute inset-0 pl-10 pr-4 flex justify-between items-end pb-8">
-                {trendData.map((d, i) => (
-                  <div key={i} className="flex flex-col items-center gap-1 h-full justify-end relative">
-                    <div className="flex items-end gap-1.5 h-full">
+              <div className="absolute inset-0 pl-12 pr-6 flex justify-between items-end pb-8">
+                {displayChartData.map((d, i) => (
+                  <div key={i} className="flex flex-col items-center gap-1 h-full justify-end relative group">
+                    <div className={`flex items-end h-full ${selectedMonth === 'All month' ? 'gap-2' : 'gap-1'}`}>
                       <div
-                        className="w-[14px] bg-[#4361ee] rounded-t-sm relative transition-all duration-300"
-                        style={{ height: `${(d.submission / maxTrendValue) * 100}%` }}
+                        className={`${selectedMonth === 'All month' ? 'w-[14px]' : 'w-[8px] sm:w-[10px]'} bg-[#4361ee] rounded-t-sm relative transition-all duration-1000 ease-out hover:opacity-80`}
+                        style={{ height: isAnimated ? `${(d.submission / maxChartValue) * 100}%` : '0%' }}
                       >
-                        <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-[9px] font-bold text-[#4361ee]">{d.submission}</span>
+                        {selectedMonth === 'All month' && (
+                          <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-[9px] font-bold text-[#4361ee] opacity-0 group-hover:opacity-100 transition-opacity">{d.submission}</span>
+                        )}
                       </div>
                       <div
-                        className="w-[14px] bg-[#2a9d8f] rounded-t-sm relative transition-all duration-300"
-                        style={{ height: `${(d.completed / maxTrendValue) * 100}%` }}
+                        className={`${selectedMonth === 'All month' ? 'w-[14px]' : 'w-[8px] sm:w-[10px]'} bg-[#2a9d8f] rounded-t-sm relative transition-all duration-1000 ease-out hover:opacity-80`}
+                        style={{ height: isAnimated ? `${(d.completed / maxChartValue) * 100}%` : '0%' }}
                       >
-                        <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-[9px] font-bold text-[#2a9d8f]">{d.completed}</span>
+                        {selectedMonth === 'All month' && (
+                          <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-[9px] font-bold text-[#2a9d8f] opacity-0 group-hover:opacity-100 transition-opacity">{d.completed}</span>
+                        )}
                       </div>
                     </div>
-                    <span className="absolute -bottom-6 text-[10px] text-gray-500 font-medium whitespace-nowrap">{d.label}</span>
+                    {selectedMonth !== 'All month' && (
+                      <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
+                        <p>Sub: {d.submission}</p>
+                        <p>Comp: {d.completed}</p>
+                      </div>
+                    )}
+                    <span className={`absolute -bottom-6 text-[10px] text-gray-500 font-medium whitespace-nowrap ${selectedMonth !== 'All month' ? 'scale-75 origin-top' : ''}`}>{d.label}</span>
                   </div>
                 ))}
               </div>
@@ -353,7 +507,7 @@ export default function ManagementDashboard() {
         {/* Bottleneck Radar */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
           <div className="flex items-start justify-between mb-1">
-            <h3 className="text-[15px] font-bold text-gray-900">Bottleneck Radar</h3>
+            <h3 className="text-[15px] font-bold text-gray-900">Bottleneck Radar Leaderboard</h3>
             <span className="flex items-center gap-1.5 text-[11px] font-semibold text-green-600">
               <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
               Live
