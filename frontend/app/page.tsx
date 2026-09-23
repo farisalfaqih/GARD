@@ -53,14 +53,14 @@ interface DashboardData {
 
 const mockData: DashboardData = {
   stats: {
-    total: 30,
-    inReview: 10,
-    needRevision: 4,
-    completed: 16,
+    total: 35,
+    inReview: 12,
+    needRevision: 5,
+    completed: 18,
   },
   assessmentProgresses: [
     {
-      current: 'Permintaan Penggunaan HCSO',
+      current: 'Test Use Case 1',
       version: 'v2',
       status: 'NEED REVISION',
       steps: [
@@ -73,7 +73,7 @@ const mockData: DashboardData = {
       ],
     },
     {
-      current: 'Test Use Case Baru',
+      current: 'Test Use Case 2',
       version: 'v1',
       status: 'COMPLETED',
       steps: [
@@ -86,8 +86,47 @@ const mockData: DashboardData = {
       ],
     },
     {
-      current: 'Perubahan Data Target',
+      current: 'Test Use Case 3',
       version: 'v2',
+      status: 'IN REVIEW',
+      steps: [
+        { name: 'Draft', completed: true },
+        { name: 'Submitted', completed: true },
+        { name: 'Review', completed: true, current: true },
+        { name: 'Revision', completed: false },
+        { name: 'DG Council', completed: false },
+        { name: 'Completed', completed: false },
+      ],
+    },
+    {
+      current: 'Integrasi API Payment Gateway',
+      version: 'v1',
+      status: 'NEED REVISION',
+      steps: [
+        { name: 'Draft', completed: true },
+        { name: 'Submitted', completed: true },
+        { name: 'Review', completed: true },
+        { name: 'Revision', completed: true, current: true },
+        { name: 'DG Council', completed: false },
+        { name: 'Completed', completed: false },
+      ],
+    },
+    {
+      current: 'Pengembangan Modul Reporting',
+      version: 'v3',
+      status: 'COMPLETED',
+      steps: [
+        { name: 'Draft', completed: true },
+        { name: 'Submitted', completed: true },
+        { name: 'Review', completed: true },
+        { name: 'Revision', completed: true },
+        { name: 'DG Council', completed: true },
+        { name: 'Completed', completed: true, current: true },
+      ],
+    },
+    {
+      current: 'Migrasi Database User',
+      version: 'v1',
       status: 'IN REVIEW',
       steps: [
         { name: 'Draft', completed: true },
@@ -103,26 +142,26 @@ const mockData: DashboardData = {
     {
       id: 'GRD-2026-0008',
       badge: 'NEED REVISION',
-      title: 'Permintaan Penggunaan HCSO',
+      title: 'Test Use Case 1',
       time: '7 days ago',
     },
     {
-      id: 'GRD-2026-0008',
+      id: 'GRD-2026-0012',
       badge: 'NEED DATA PROVIDER EVIDENCE',
-      title: 'Permintaan Penggunaan HCSO',
-      time: '7 days ago',
+      title: 'Test Use Case 2',
+      time: '2 days ago',
     },
     {
-      id: 'GRD-2026-0008',
-      badge: 'NEED DATA PROCESSING APPROVALS',
-      title: 'Permintaan Penggunaan HCSO',
-      time: '7 days ago',
-    },
+      id: 'GRD-2026-0015',
+      badge: 'NEED ADDITIONAL DOCS',
+      title: 'Test Use Case 3',
+      time: '1 day ago',
+    }
   ],
   recentRequests: [
     {
       threadId: 'GRD-2026-0008',
-      title: 'Permintaan Penggunaan HCSO',
+      title: 'Test Use Case 1',
       type: 'Assessment',
       version: 'v2',
       status: 'Need Revision',
@@ -130,7 +169,7 @@ const mockData: DashboardData = {
     },
     {
       threadId: 'GRD-2026-0005',
-      title: 'Test Use Case Baru',
+      title: 'Test Use Case 2',
       type: 'Assessment',
       version: 'v1',
       status: 'Completed',
@@ -138,12 +177,36 @@ const mockData: DashboardData = {
     },
     {
       threadId: 'GRD-2026-0007',
-      title: 'Perubahan Data Target',
+      title: 'Test Use Case 3',
       type: 'Reassessment',
       version: 'v2',
       status: 'In Review',
       lastUpdated: '10 days ago',
     },
+    {
+      threadId: 'GRD-2026-0012',
+      title: 'Integrasi API Payment Gateway',
+      type: 'Assessment',
+      version: 'v1',
+      status: 'Need Revision',
+      lastUpdated: '2 days ago',
+    },
+    {
+      threadId: 'GRD-2026-0015',
+      title: 'Update Skema Keamanan',
+      type: 'Reassessment',
+      version: 'v1',
+      status: 'In Review',
+      lastUpdated: '1 day ago',
+    },
+    {
+      threadId: 'GRD-2026-0016',
+      title: 'Penambahan Atribut KYC',
+      type: 'Assessment',
+      version: 'v3',
+      status: 'Completed',
+      lastUpdated: '5 days ago',
+    }
   ],
 };
 
@@ -201,275 +264,272 @@ export default function DashboardPage() {
 
   return (
     <>
-          {/* Page Header */}
-          <div className="flex items-start justify-between mb-6">
-            <div>
-              <h2 className="text-[22px] font-bold text-gray-900 tracking-tight">Dashboard Requester</h2>
-              <p className="text-[13px] text-gray-500 mt-0.5">Your assessment overview and upcoming tasks.</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={fetchData}
-                className="w-10 h-10 rounded-md bg-gradient-to-r from-[#1e1b4b] to-[#312e81] text-white flex items-center justify-center hover:opacity-90 transition shadow-sm"
-              >
-                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-              </button>
-              <button className="px-4 py-2 h-10 rounded-md bg-gradient-to-r from-[#1e1b4b] to-[#312e81] text-white text-[13px] font-semibold hover:opacity-90 transition shadow-sm">
-                MY REQUESTS
-              </button>
-              <button className="px-4 py-2 h-10 rounded-md bg-gradient-to-r from-[#1e1b4b] to-[#312e81] text-white text-[13px] font-semibold flex items-center gap-2 hover:opacity-90 transition shadow-sm">
-                <Plus className="w-4 h-4" />
-                CREATE ASSESSMENT
-              </button>
+      {/* Page Header */}
+      <div className="flex items-start justify-between mb-6">
+        <div>
+          <h2 className="text-[22px] font-bold text-gray-900 tracking-tight">Dashboard Requester</h2>
+          <p className="text-[13px] text-gray-500 mt-0.5">Your assessment overview and upcoming tasks.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={fetchData}
+            className="w-10 h-10 rounded-md bg-gradient-to-r from-[#1e1b4b] to-[#312e81] text-white flex items-center justify-center hover:opacity-90 transition shadow-sm"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+          <button className="px-4 py-2 h-10 rounded-md bg-gradient-to-r from-[#1e1b4b] to-[#312e81] text-white text-[13px] font-semibold hover:opacity-90 transition shadow-sm">
+            MY REQUESTS
+          </button>
+          <button className="px-4 py-2 h-10 rounded-md bg-gradient-to-r from-[#1e1b4b] to-[#312e81] text-white text-[13px] font-semibold flex items-center gap-2 hover:opacity-90 transition shadow-sm">
+            <Plus className="w-4 h-4" />
+            CREATE ASSESSMENT
+          </button>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 px-5 py-4 mb-6">
+        <div className="flex flex-wrap items-end gap-4 sm:gap-6">
+          <div className="w-[180px]">
+            <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Month</label>
+            <div className="relative">
+              <select className="w-full appearance-none border border-gray-300 text-gray-700 text-[13px] rounded-md px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer">
+                <option>All month</option>
+                <option>January</option>
+                <option>February</option>
+                <option>March</option>
+                <option>April</option>
+                <option>May</option>
+                <option>June</option>
+                <option>July</option>
+                <option>August</option>
+                <option>September</option>
+                <option>October</option>
+                <option>November</option>
+                <option>December</option>
+              </select>
+              <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
+          <div className="w-[120px]">
+            <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Year</label>
+            <div className="relative">
+              <select className="w-full appearance-none border border-gray-300 text-gray-700 text-[13px] rounded-md px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer">
+                <option>All year</option>
+                <option>2026</option>
+              </select>
+              <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
+          </div>
+        </div>
+      </div>
 
-          {/* Filters */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 px-5 py-4 mb-6">
-            <div className="flex flex-wrap items-end gap-4 sm:gap-6">
-              <div className="w-[180px]">
-                <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Month</label>
-                <div className="relative">
-                  <select className="w-full appearance-none border border-gray-300 text-gray-700 text-[13px] rounded-md px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer">
-                    <option>All month</option>
-                    <option>January</option>
-                    <option>February</option>
-                    <option>March</option>
-                    <option>April</option>
-                    <option>May</option>
-                    <option>June</option>
-                    <option>July</option>
-                    <option>August</option>
-                    <option>September</option>
-                    <option>October</option>
-                    <option>November</option>
-                    <option>December</option>
-                  </select>
-                  <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+        <div className="bg-gradient-to-br from-[#3b82f6] to-[#1d4ed8] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
+          <h3 className="text-[10px] font-bold uppercase tracking-wider opacity-90">Total</h3>
+          <p className="text-[28px] font-bold leading-none mt-2">{stats.total}</p>
+        </div>
+        <div className="bg-gradient-to-br from-[#60a5fa] to-[#2563eb] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
+          <h3 className="text-[10px] font-bold uppercase tracking-wider opacity-90">In Review</h3>
+          <p className="text-[28px] font-bold leading-none mt-2">{stats.inReview}</p>
+        </div>
+        <div className="bg-gradient-to-br from-[#fbbf24] to-[#d97706] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
+          <h3 className="text-[10px] font-bold uppercase tracking-wider opacity-90">Need Revision</h3>
+          <p className="text-[28px] font-bold leading-none mt-2">{stats.needRevision}</p>
+        </div>
+        <div className="bg-gradient-to-br from-[#10b981] to-[#047857] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
+          <h3 className="text-[10px] font-bold uppercase tracking-wider opacity-90">Completed</h3>
+          <p className="text-[28px] font-bold leading-none mt-2">{stats.completed}</p>
+        </div>
+      </div>
+
+      {/* My Assessment Progress */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 mb-6">
+        <h3 className="text-[15px] font-bold text-gray-900 mb-4">My Assessment Progress</h3>
+        {currentProgress && (
+          <>
+            <div className="flex items-center gap-3 mb-12">
+              <div className="relative">
+                <select
+                  className="appearance-none border border-[#3b3f94] rounded-md px-3 py-1.5 pr-8 text-[13px] font-medium text-[#2d2d2d] bg-white focus:outline-none cursor-pointer"
+                  value={selectedProgressIdx}
+                  onChange={(e) => setSelectedProgressIdx(Number(e.target.value))}
+                >
+                  {assessmentProgresses.map((p, idx) => (
+                    <option key={idx} value={idx}>{p.current}</option>
+                  ))}
+                </select>
+                <ChevronDown className="w-4 h-4 text-[#2d2d2d] absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
-              <div className="w-[120px]">
-                <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Year</label>
-                <div className="relative">
-                  <select className="w-full appearance-none border border-gray-300 text-gray-700 text-[13px] rounded-md px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer">
-                    <option>All year</option>
-                    <option>2026</option>
-                  </select>
-                  <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
-              </div>
+              <span className="px-2.5 py-0.5 rounded-full bg-[#e6e8eb] text-[#717682] text-[11px] font-medium inline-flex items-center">
+                {currentProgress.version}
+              </span>
+              <span className={`px-1.5 py-[2px] rounded text-[9px] font-bold ${getBadgeColor(currentProgress.status)} uppercase tracking-wider`}>
+                {currentProgress.status}
+              </span>
             </div>
-          </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
-            <div className="bg-gradient-to-br from-[#3b82f6] to-[#1d4ed8] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
-              <h3 className="text-[10px] font-bold uppercase tracking-wider opacity-90">Total</h3>
-              <p className="text-[28px] font-bold leading-none mt-2">{stats.total}</p>
-            </div>
-            <div className="bg-gradient-to-br from-[#60a5fa] to-[#2563eb] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
-              <h3 className="text-[10px] font-bold uppercase tracking-wider opacity-90">In Review</h3>
-              <p className="text-[28px] font-bold leading-none mt-2">{stats.inReview}</p>
-            </div>
-            <div className="bg-gradient-to-br from-[#fbbf24] to-[#d97706] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
-              <h3 className="text-[10px] font-bold uppercase tracking-wider opacity-90">Need Revision</h3>
-              <p className="text-[28px] font-bold leading-none mt-2">{stats.needRevision}</p>
-            </div>
-            <div className="bg-gradient-to-br from-[#10b981] to-[#047857] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
-              <h3 className="text-[10px] font-bold uppercase tracking-wider opacity-90">Completed</h3>
-              <p className="text-[28px] font-bold leading-none mt-2">{stats.completed}</p>
-            </div>
-          </div>
-
-          {/* My Assessment Progress */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 mb-6">
-            <h3 className="text-[15px] font-bold text-gray-900 mb-4">My Assessment Progress</h3>
-            {currentProgress && (
-              <>
-                <div className="flex items-center gap-3 mb-12">
-                  <div className="relative">
-                    <select
-                      className="appearance-none border border-[#3b3f94] rounded-md px-3 py-1.5 pr-8 text-[13px] font-medium text-[#2d2d2d] bg-white focus:outline-none cursor-pointer"
-                      value={selectedProgressIdx}
-                      onChange={(e) => setSelectedProgressIdx(Number(e.target.value))}
-                    >
-                      {assessmentProgresses.map((p, idx) => (
-                        <option key={idx} value={idx}>{p.current}</option>
-                      ))}
-                    </select>
-                    <ChevronDown className="w-4 h-4 text-[#2d2d2d] absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  </div>
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#e6e8eb] text-[#717682] text-[11px] font-medium inline-flex items-center">
-                    {currentProgress.version}
-                  </span>
-                  <span className={`px-1.5 py-[2px] rounded text-[9px] font-bold ${getBadgeColor(currentProgress.status)} uppercase tracking-wider`}>
-                    {currentProgress.status}
-                  </span>
-                </div>
-
-                {/* Stepper */}
-                <div className="relative px-8 pt-2 pb-8 max-w-4xl mx-auto">
-                  <div className="flex justify-between relative z-10">
-                    {(() => {
-                      const lastCompletedIdx = currentProgress.steps.reduce(
-                        (last, s, i) => (s.completed ? i : last),
-                        -1
-                      );
-                      return currentProgress.steps.map((step, idx) => {
-                      const isLast = idx === currentProgress.steps.length - 1;
-                      const hasNext = idx < currentProgress.steps.length - 1;
-                      const nextStep = hasNext ? currentProgress.steps[idx + 1] : null;
-                  const lineCompleted = hasNext && step.completed && nextStep!.completed;
-                  return (
-                    <div
-                      key={idx}
-                      className="flex flex-col items-center relative flex-1"
-                    >
-                      {hasNext && (
-                        <div
-                          className={`absolute top-[16px] left-[50%] w-full h-[2px] z-0 ${
-                            lineCompleted ? 'bg-[#006c28]' : 'bg-[#717682]'
-                          }`}
-                        ></div>
-                      )}
+            {/* Stepper */}
+            <div className="relative px-8 pt-2 pb-8 max-w-4xl mx-auto">
+              <div className="flex justify-between relative z-10">
+                {(() => {
+                  const lastCompletedIdx = currentProgress.steps.reduce(
+                    (last, s, i) => (s.completed ? i : last),
+                    -1
+                  );
+                  return currentProgress.steps.map((step, idx) => {
+                    const isLast = idx === currentProgress.steps.length - 1;
+                    const hasNext = idx < currentProgress.steps.length - 1;
+                    const nextStep = hasNext ? currentProgress.steps[idx + 1] : null;
+                    const lineCompleted = hasNext && step.completed && nextStep!.completed;
+                    return (
                       <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center border-0 z-10 relative ${
-                          step.completed
-                            ? 'bg-[#006c28] text-white'
-                            : 'bg-[#717682] text-white'
-                        }`}
+                        key={idx}
+                        className="flex flex-col items-center relative flex-1"
                       >
-                        {step.completed ? (
-                          <Check className="w-4 h-4" strokeWidth={3} />
-                        ) : (
-                          <Pencil className="w-3.5 h-3.5" />
+                        {hasNext && (
+                          <div
+                            className={`absolute top-[16px] left-[50%] w-full h-[2px] z-0 ${lineCompleted ? 'bg-[#006c28]' : 'bg-[#717682]'
+                              }`}
+                          ></div>
+                        )}
+                        <div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center border-0 z-10 relative ${step.completed
+                              ? 'bg-[#006c28] text-white'
+                              : 'bg-[#717682] text-white'
+                            }`}
+                        >
+                          {step.completed ? (
+                            <Check className="w-4 h-4" strokeWidth={3} />
+                          ) : (
+                            <Pencil className="w-3.5 h-3.5" />
+                          )}
+                        </div>
+                        <p
+                          className={`text-[13.5px] mt-2.5 text-center z-10 relative tracking-wide ${idx === lastCompletedIdx
+                              ? 'text-[#006c28] font-bold'
+                              : step.completed
+                                ? 'text-gray-700 font-medium'
+                                : 'text-[#717682] font-medium'
+                            }`}
+                        >
+                          {step.name}
+                        </p>
+                        {isLast && (
+                          <button className="mt-1 px-3 py-[2px] bg-[#717682] text-white text-[9px] font-medium rounded hover:bg-gray-600 transition">
+                            PIR
+                          </button>
                         )}
                       </div>
-                      <p
-                        className={`text-[13.5px] mt-2.5 text-center z-10 relative tracking-wide ${
-                          idx === lastCompletedIdx
-                            ? 'text-[#006c28] font-bold'
-                            : step.completed
-                            ? 'text-gray-700 font-medium'
-                            : 'text-[#717682] font-medium'
-                        }`}
-                      >
-                        {step.name}
-                      </p>
-                      {isLast && (
-                        <button className="mt-1 px-3 py-[2px] bg-[#717682] text-white text-[9px] font-medium rounded hover:bg-gray-600 transition">
-                          PIR
-                        </button>
-                      )}
-                    </div>
-                      );
-                    });
-                  })()}
+                    );
+                  });
+                })()}
               </div>
             </div>
-            </>
-          )}
-          </div>
+          </>
+        )}
+      </div>
 
-          {/* Action Required */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 mb-6">
-            <div className="flex items-baseline gap-4 mb-4">
-              <h3 className="text-[15px] font-bold text-gray-900">Action Required</h3>
-              <a href="#" className="text-[12px] font-bold text-[#3b3f94] hover:underline">
-                See All
-              </a>
-            </div>
+      {/* Action Required */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 mb-6">
+        <div className="flex items-baseline gap-4 mb-4">
+          <h3 className="text-[15px] font-bold text-gray-900">Action Required</h3>
+          <a href="#" className="text-[12px] font-bold text-[#3b3f94] hover:underline">
+            See All
+          </a>
+        </div>
 
-            <div className="flex flex-col md:flex-row gap-4">
-              {actionRequired.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="flex-1 border border-gray-200 rounded p-4 bg-[#fafafa] flex flex-col justify-between shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-[#3b3f94]/30 transition-all duration-300 cursor-pointer"
-                >
-                  <div>
-                    <div className="flex items-center gap-2 mb-2.5">
-                      <span className="text-[13px] text-gray-700">{item.id}</span>
-                      <span className={`px-1.5 py-[2px] rounded text-[9px] font-bold ${getBadgeColor(item.badge)} uppercase tracking-wider`}>
-                        {item.badge}
-                      </span>
-                    </div>
-                    <p className="text-[14px] font-medium text-gray-900 mb-6">{item.title}</p>
-                  </div>
-                  <div className="flex items-center justify-between mt-1">
-                    <div className="flex items-center gap-1.5 text-gray-500">
-                      <Clock className="w-3.5 h-3.5" />
-                      <span className="text-[12px]">{item.time}</span>
-                    </div>
-                    <button className="px-3.5 py-1.5 bg-gradient-to-r from-[#1e1b4b] to-[#312e81] text-white text-[10px] font-semibold rounded hover:opacity-90 transition tracking-wider shadow-sm">
-                      REVIEW NOW
-                    </button>
-                  </div>
+        <div className="flex flex-col md:flex-row gap-4">
+          {actionRequired.map((item, idx) => (
+            <div
+              key={idx}
+              className="flex-1 border border-gray-200 rounded p-4 bg-[#fafafa] flex flex-col justify-between shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-[#3b3f94]/30 transition-all duration-300 cursor-pointer"
+            >
+              <div>
+                <div className="flex items-center gap-2 mb-2.5">
+                  <span className="text-[13px] text-gray-700">{item.id}</span>
+                  <span className={`px-1.5 py-[2px] rounded text-[9px] font-bold ${getBadgeColor(item.badge)} uppercase tracking-wider`}>
+                    {item.badge}
+                  </span>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* My Recent Requests */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[15px] font-bold text-gray-900">My Recent Requests</h3>
-              <div className="relative">
-                <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  placeholder="Search requests..."
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
-                  className="pl-9 pr-9 py-2 border border-gray-200 rounded-lg text-[13px] text-[#2d2d2d] focus:outline-none focus:border-[#3b3f94] w-64 shadow-sm"
-                />
-                <button className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded">
-                  <Filter className="w-4 h-4 text-gray-500" />
+                <p className="text-[14px] font-medium text-gray-900 mb-6">{item.title}</p>
+              </div>
+              <div className="flex items-center justify-between mt-1">
+                <div className="flex items-center gap-1.5 text-gray-500">
+                  <Clock className="w-3.5 h-3.5" />
+                  <span className="text-[12px]">{item.time}</span>
+                </div>
+                <button className="px-3.5 py-1.5 bg-gradient-to-r from-[#1e1b4b] to-[#312e81] text-white text-[10px] font-semibold rounded hover:opacity-90 transition tracking-wider shadow-sm">
+                  REVIEW NOW
                 </button>
               </div>
             </div>
+          ))}
+        </div>
+      </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="text-[#717682] text-[11px] font-bold uppercase tracking-wider border-b border-gray-100">
-                    <th className="text-left py-3 px-4">Thread ID</th>
-                    <th className="text-left py-3 px-4">Request Title</th>
-                    <th className="text-left py-3 px-4">Type</th>
-                    <th className="text-left py-3 px-4">Version</th>
-                    <th className="text-left py-3 px-4">Status</th>
-                    <th className="text-left py-3 px-4">Last Updated</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredRequests.map((req, idx) => (
-                    <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50/50 transition">
-                      <td className="py-4 px-4 text-[13px] text-gray-600 font-medium">{req.threadId}</td>
-                      <td className="py-4 px-4 text-[13px] text-[#2d2d2d] font-medium">{req.title}</td>
-                      <td className="py-4 px-4 text-[13px] text-gray-600">{req.type}</td>
-                      <td className="py-4 px-4">
-                        <span className="px-2 py-0.5 bg-[#e6e8eb] rounded text-[11px] text-[#717682] font-semibold">
-                          {req.version}
-                        </span>
-                      </td>
-                      <td className="py-4 px-4">
-                        <span className={`px-2.5 py-1 rounded-[4px] text-[11px] font-bold ${getTableBadgeColor(req.status)}`}>
-                          {req.status}
-                        </span>
-                      </td>
-                      <td className="py-4 px-4 text-[13px] text-gray-600">{req.lastUpdated}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="flex justify-center mt-6">
-              <button className="text-[13px] font-bold text-[#101828] hover:text-[#3b3f94] transition flex items-center gap-1.5 uppercase tracking-wider">
-                VIEW ALL REQUESTS
-                <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
-              </button>
-            </div>
+      {/* My Recent Requests */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-[15px] font-bold text-gray-900">My Recent Requests</h3>
+          <div className="relative">
+            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Search requests..."
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              className="pl-9 pr-9 py-2 border border-gray-200 rounded-lg text-[13px] text-[#2d2d2d] focus:outline-none focus:border-[#3b3f94] w-64 shadow-sm"
+            />
+            <button className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded">
+              <Filter className="w-4 h-4 text-gray-500" />
+            </button>
           </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="text-[#717682] text-[11px] font-bold uppercase tracking-wider border-b border-gray-100">
+                <th className="text-left py-3 px-4">Thread ID</th>
+                <th className="text-left py-3 px-4">Request Title</th>
+                <th className="text-left py-3 px-4">Type</th>
+                <th className="text-left py-3 px-4">Version</th>
+                <th className="text-left py-3 px-4">Status</th>
+                <th className="text-left py-3 px-4">Last Updated</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredRequests.map((req, idx) => (
+                <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50/50 transition">
+                  <td className="py-4 px-4 text-[13px] text-gray-600 font-medium">{req.threadId}</td>
+                  <td className="py-4 px-4 text-[13px] text-[#2d2d2d] font-medium">{req.title}</td>
+                  <td className="py-4 px-4 text-[13px] text-gray-600">{req.type}</td>
+                  <td className="py-4 px-4">
+                    <span className="px-2 py-0.5 bg-[#e6e8eb] rounded text-[11px] text-[#717682] font-semibold">
+                      {req.version}
+                    </span>
+                  </td>
+                  <td className="py-4 px-4">
+                    <span className={`px-2.5 py-1 rounded-[4px] text-[11px] font-bold ${getTableBadgeColor(req.status)}`}>
+                      {req.status}
+                    </span>
+                  </td>
+                  <td className="py-4 px-4 text-[13px] text-gray-600">{req.lastUpdated}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="flex justify-center mt-6">
+          <button className="text-[13px] font-bold text-[#101828] hover:text-[#3b3f94] transition flex items-center gap-1.5 uppercase tracking-wider">
+            VIEW ALL REQUESTS
+            <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
+          </button>
+        </div>
+      </div>
     </>
   );
 }

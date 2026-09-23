@@ -18,7 +18,7 @@ class DashboardController extends Controller
             ],
             'assessmentProgresses' => [
                 [
-                    'current' => 'Permintaan Penggunaan HCSO',
+                    'current' => 'Test Use Case 1',
                     'version' => 'v2',
                     'status' => 'NEED REVISION',
                     'steps' => [
@@ -31,7 +31,7 @@ class DashboardController extends Controller
                     ],
                 ],
                 [
-                    'current' => 'Test Use Case Baru',
+                    'current' => 'Test Use Case 2',
                     'version' => 'v1',
                     'status' => 'COMPLETED',
                     'steps' => [
@@ -44,7 +44,7 @@ class DashboardController extends Controller
                     ],
                 ],
                 [
-                    'current' => 'Perubahan Data Target',
+                    'current' => 'Test Use Case 3',
                     'version' => 'v2',
                     'status' => 'IN REVIEW',
                     'steps' => [
@@ -61,26 +61,26 @@ class DashboardController extends Controller
                 [
                     'id' => 'GRD-2026-0008',
                     'badge' => 'NEED REVISION',
-                    'title' => 'Permintaan Penggunaan HCSO',
+                    'title' => 'Test Use Case 1',
                     'time' => '7 days ago',
                 ],
                 [
-                    'id' => 'GRD-2026-0008',
+                    'id' => 'GRD-2026-0012',
                     'badge' => 'NEED DATA PROVIDER EVIDENCE',
-                    'title' => 'Permintaan Penggunaan HCSO',
-                    'time' => '7 days ago',
+                    'title' => 'Test Use Case 2',
+                    'time' => '2 days ago',
                 ],
                 [
-                    'id' => 'GRD-2026-0008',
-                    'badge' => 'NEED DATA PROCESSING APPROVALS',
-                    'title' => 'Permintaan Penggunaan HCSO',
-                    'time' => '7 days ago',
+                    'id' => 'GRD-2026-0015',
+                    'badge' => 'NEED ADDITIONAL DOCS',
+                    'title' => 'Test Use Case 3',
+                    'time' => '1 day ago',
                 ],
             ],
             'recentRequests' => [
                 [
                     'threadId' => 'GRD-2026-0008',
-                    'title' => 'Permintaan Penggunaan HCSO',
+                    'title' => 'Test Use Case 1',
                     'type' => 'Assessment',
                     'version' => 'v2',
                     'status' => 'Need Revision',
@@ -88,7 +88,7 @@ class DashboardController extends Controller
                 ],
                 [
                     'threadId' => 'GRD-2026-0005',
-                    'title' => 'Test Use Case Baru',
+                    'title' => 'Test Use Case 2',
                     'type' => 'Assessment',
                     'version' => 'v1',
                     'status' => 'Completed',
@@ -96,7 +96,7 @@ class DashboardController extends Controller
                 ],
                 [
                     'threadId' => 'GRD-2026-0007',
-                    'title' => 'Perubahan Data Target',
+                    'title' => 'Test Use Case 3',
                     'type' => 'Reassessment',
                     'version' => 'v2',
                     'status' => 'In Review',
