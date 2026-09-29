@@ -228,12 +228,30 @@ const getTableBadgeColor = (status: string) => {
   return 'bg-gray-100 text-gray-700';
 };
 
+const monthlyStats: Record<string, { total: number; inReview: number; needRevision: number; completed: number }> = {
+  'All month': { total: 30, inReview: 10, needRevision: 4, completed: 16 },
+  January: { total: 3, inReview: 1, needRevision: 0, completed: 2 },
+  February: { total: 2, inReview: 1, needRevision: 0, completed: 1 },
+  March: { total: 3, inReview: 1, needRevision: 1, completed: 1 },
+  April: { total: 2, inReview: 0, needRevision: 0, completed: 2 },
+  May: { total: 3, inReview: 1, needRevision: 1, completed: 1 },
+  June: { total: 2, inReview: 1, needRevision: 0, completed: 1 },
+  July: { total: 3, inReview: 1, needRevision: 1, completed: 1 },
+  August: { total: 3, inReview: 1, needRevision: 0, completed: 2 },
+  September: { total: 2, inReview: 1, needRevision: 1, completed: 0 },
+  October: { total: 2, inReview: 0, needRevision: 0, completed: 2 },
+  November: { total: 2, inReview: 1, needRevision: 0, completed: 1 },
+  December: { total: 3, inReview: 1, needRevision: 0, completed: 2 },
+};
+
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData>(mockData);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [selectedProgressIdx, setSelectedProgressIdx] = useState(0);
+  const [selectedMonth, setSelectedMonth] = useState('All month');
+  const [selectedYear, setSelectedYear] = useState('All year');
 
   const fetchData = async () => {
     setLoading(true);
@@ -254,6 +272,7 @@ export default function DashboardPage() {
   }, []);
 
   const { stats, assessmentProgresses, actionRequired, recentRequests } = data;
+  const currentStats = monthlyStats[selectedMonth] || stats;
   const currentProgress = assessmentProgresses ? (assessmentProgresses[selectedProgressIdx] || assessmentProgresses[0]) : null;
 
   const filteredRequests = recentRequests.filter(
@@ -324,6 +343,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
+<<<<<<< Updated upstream
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
         <div className="bg-gradient-to-br from-[#3b82f6] to-[#1d4ed8] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
@@ -361,6 +381,49 @@ export default function DashboardPage() {
                   ))}
                 </select>
                 <ChevronDown className="w-4 h-4 text-[#2d2d2d] absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+=======
+          {/* Filters */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 px-5 py-4 mb-6">
+            <div className="flex flex-wrap items-end gap-4 sm:gap-6">
+              <div className="w-[180px]">
+                <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Month</label>
+                <div className="relative">
+                  <select
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                    className="w-full appearance-none border border-gray-300 text-gray-700 text-[13px] rounded-md px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer"
+                  >
+                    <option value="All month">All month</option>
+                    <option value="January">January</option>
+                    <option value="February">February</option>
+                    <option value="March">March</option>
+                    <option value="April">April</option>
+                    <option value="May">May</option>
+                    <option value="June">June</option>
+                    <option value="July">July</option>
+                    <option value="August">August</option>
+                    <option value="September">September</option>
+                    <option value="October">October</option>
+                    <option value="November">November</option>
+                    <option value="December">December</option>
+                  </select>
+                  <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+              </div>
+              <div className="w-[120px]">
+                <label className="block text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Year</label>
+                <div className="relative">
+                  <select
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(e.target.value)}
+                    className="w-full appearance-none border border-gray-300 text-gray-700 text-[13px] rounded-md px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer"
+                  >
+                    <option value="All year">All year</option>
+                    <option value="2026">2026</option>
+                  </select>
+                  <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+>>>>>>> Stashed changes
               </div>
               <span className="px-2.5 py-0.5 rounded-full bg-[#e6e8eb] text-[#717682] text-[11px] font-medium inline-flex items-center">
                 {currentProgress.version}
@@ -370,6 +433,7 @@ export default function DashboardPage() {
               </span>
             </div>
 
+<<<<<<< Updated upstream
             {/* Stepper */}
             <div className="relative px-8 pt-2 pb-8 max-w-4xl mx-auto">
               <div className="flex justify-between relative z-10">
@@ -384,6 +448,79 @@ export default function DashboardPage() {
                     const nextStep = hasNext ? currentProgress.steps[idx + 1] : null;
                     const lineCompleted = hasNext && step.completed && nextStep!.completed;
                     return (
+=======
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+            <div className="bg-gradient-to-br from-[#3b82f6] to-[#1d4ed8] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
+              <h3 className="text-[10px] font-bold uppercase tracking-wider opacity-90">Total</h3>
+              <p className="text-[28px] font-bold leading-none mt-2">{currentStats.total}</p>
+            </div>
+            <div className="bg-gradient-to-br from-[#60a5fa] to-[#2563eb] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
+              <h3 className="text-[10px] font-bold uppercase tracking-wider opacity-90">In Review</h3>
+              <p className="text-[28px] font-bold leading-none mt-2">{currentStats.inReview}</p>
+            </div>
+            <div className="bg-gradient-to-br from-[#fbbf24] to-[#d97706] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
+              <h3 className="text-[10px] font-bold uppercase tracking-wider opacity-90">Need Revision</h3>
+              <p className="text-[28px] font-bold leading-none mt-2">{currentStats.needRevision}</p>
+            </div>
+            <div className="bg-gradient-to-br from-[#10b981] to-[#047857] rounded-xl p-4 text-white shadow-sm flex flex-col justify-between min-h-[90px] hover:-translate-y-1 hover:shadow-lg hover:scale-[1.03] transition-all duration-300 cursor-pointer">
+              <h3 className="text-[10px] font-bold uppercase tracking-wider opacity-90">Completed</h3>
+              <p className="text-[28px] font-bold leading-none mt-2">{currentStats.completed}</p>
+            </div>
+          </div>
+
+          {/* My Assessment Progress */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 mb-6">
+            <h3 className="text-[15px] font-bold text-gray-900 mb-4">My Assessment Progress</h3>
+            {currentProgress && (
+              <>
+                <div className="flex items-center gap-3 mb-12">
+                  <div className="relative">
+                    <select
+                      className="appearance-none border border-[#3b3f94] rounded-md px-3 py-1.5 pr-8 text-[13px] font-medium text-[#2d2d2d] bg-white focus:outline-none cursor-pointer"
+                      value={selectedProgressIdx}
+                      onChange={(e) => setSelectedProgressIdx(Number(e.target.value))}
+                    >
+                      {assessmentProgresses.map((p, idx) => (
+                        <option key={idx} value={idx}>{p.current}</option>
+                      ))}
+                    </select>
+                    <ChevronDown className="w-4 h-4 text-[#2d2d2d] absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#e6e8eb] text-[#717682] text-[11px] font-medium inline-flex items-center">
+                    {currentProgress.version}
+                  </span>
+                  <span className={`px-1.5 py-[2px] rounded text-[9px] font-bold ${getBadgeColor(currentProgress.status)} uppercase tracking-wider`}>
+                    {currentProgress.status}
+                  </span>
+                </div>
+
+                {/* Stepper */}
+                <div className="relative px-8 pt-2 pb-8 max-w-4xl mx-auto">
+                  <div className="flex justify-between relative z-10">
+                    {(() => {
+                      const lastCompletedIdx = currentProgress.steps.reduce(
+                        (last, s, i) => (s.completed ? i : last),
+                        -1
+                      );
+                      return currentProgress.steps.map((step, idx) => {
+                      const isLast = idx === currentProgress.steps.length - 1;
+                      const hasNext = idx < currentProgress.steps.length - 1;
+                      const nextStep = hasNext ? currentProgress.steps[idx + 1] : null;
+                  const lineCompleted = hasNext && step.completed && nextStep!.completed;
+                  return (
+                    <div
+                      key={idx}
+                      className="flex flex-col items-center relative flex-1"
+                    >
+                      {hasNext && (
+                        <div
+                          className={`absolute top-[16px] left-[50%] w-full h-[2px] z-0 ${
+                            lineCompleted ? 'bg-[#006c28]' : 'bg-[#717682]'
+                          }`}
+                        ></div>
+                      )}
+>>>>>>> Stashed changes
                       <div
                         key={idx}
                         className="flex flex-col items-center relative flex-1"
